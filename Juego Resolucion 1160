@@ -1,0 +1,82 @@
+import React, { useState } from 'react';
+import { Button, Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+const questions = [
+  {
+    question: "¿Qué entidad en Colombia es responsable de expedir el Certificado de Cumplimiento de BPM?",
+    options: ["INVIMA", "OMS", "MinSalud", "ISO"],
+    answer: "INVIMA"
+  },
+  {
+    question: "¿Cuál es el objetivo principal de las BPM?",
+    options: ["Disminuir los costos de producción", "Garantizar la calidad uniforme de los medicamentos", "Acelerar la producción", "Minimizar el uso de materias primas"],
+    answer: "Garantizar la calidad uniforme de los medicamentos"
+  },
+  {
+    question: "¿Cada cuánto se debe realizar la autoinspección según las BPM?",
+    options: ["Mensualmente", "Trimestralmente", "Semestralmente", "Anualmente"],
+    answer: "Anualmente"
+  }
+];
+
+const JuegoInteractivo = () => {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showResult, setShowResult] = useState(false);
+
+  const handleOptionClick = (option) => {
+    setSelectedOption(option);
+  };
+
+  const handleNext = () => {
+    if (selectedOption === questions[currentQuestion].answer) {
+      setScore(score + 1);
+    }
+    setSelectedOption(null);
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+    } else {
+      setShowResult(true);
+    }
+  };
+
+  return (
+    <div className="p-10 flex flex-col items-center gap-4">
+      {!showResult ? (
+        <Card className="w-full max-w-lg">
+          <CardContent>
+            <h2 className="text-xl font-bold mb-4">Pregunta {currentQuestion + 1}/{questions.length}</h2>
+            <p className="mb-4">{questions[currentQuestion].question}</p>
+            <div className="grid grid-cols-1 gap-2">
+              {questions[currentQuestion].options.map((option, index) => (
+                <Button 
+                  key={index} 
+                  onClick={() => handleOptionClick(option)}
+                  variant={selectedOption === option ? 'secondary' : 'default'}
+                >
+                  {option}
+                </Button>
+              ))}
+            </div>
+            <Progress value={(currentQuestion + 1) / questions.length * 100} className="mt-4" />
+            <Button onClick={handleNext} className="mt-4 w-full">
+              {currentQuestion === questions.length - 1 ? 'Finalizar' : 'Siguiente'}
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="w-full max-w-lg">
+          <CardContent>
+            <h2 className="text-xl font-bold mb-4">Resultados</h2>
+            <p>Has acertado {score} de {questions.length} preguntas.</p>
+            <Button onClick={() => window.location.reload()} className="mt-4">Reiniciar</Button>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};
+
+export default JuegoInteractivo;
